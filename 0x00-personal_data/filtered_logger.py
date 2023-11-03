@@ -3,6 +3,9 @@
 import re
 from typing import List
 import logging
+from mysql.connector.connection import MySQLConnection
+from os import getenv
+import MySQLdb
 
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
@@ -28,6 +31,25 @@ def get_logger() -> logging.Logger:
     logger.propagate = False
 
     return logger
+
+
+def get_db() -> MySQLConnection:
+    """Returns a connector to the database"""
+    username = getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    password = getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    host = getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = getenv("PERSONAL_DATA_DB_NAME", "my_db")
+
+    connection = MySQLdb.connect(
+        host=host,
+        port=3306,
+        user=username,
+        passwd=password,
+        db=db_name,
+        charset="utf8",
+    )
+
+    return connection
 
 
 class RedactingFormatter(logging.Formatter):
