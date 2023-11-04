@@ -5,7 +5,7 @@ from typing import List
 import logging
 from mysql.connector.connection import MySQLConnection
 from os import getenv
-import MySQLdb
+import mysql.connector
 
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
@@ -40,12 +40,11 @@ def get_db() -> MySQLConnection:
     host = getenv("PERSONAL_DATA_DB_HOST", "localhost")
     db_name = getenv("PERSONAL_DATA_DB_NAME", "my_db")
 
-    connection = MySQLdb.connect(
+    connection = mysql.connector.connect(
         host=host,
         user=username,
-        passwd=password,
-        db=db_name,
-        charset="utf8",
+        password=password,
+        database=db_name,
     )
 
     return connection
