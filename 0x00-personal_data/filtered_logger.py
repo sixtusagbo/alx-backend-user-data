@@ -42,7 +42,6 @@ def get_db() -> MySQLConnection:
 
     connection = MySQLdb.connect(
         host=host,
-        port=3306,
         user=username,
         passwd=password,
         db=db_name,
