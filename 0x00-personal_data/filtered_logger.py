@@ -50,6 +50,22 @@ def get_db() -> MySQLConnection:
     return connection
 
 
+def main() -> None:
+    """Display db rows in a filtered format"""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+    logger = get_logger()
+    for row in cursor:
+        message = (
+            "name={};email={};phone={};ssn={};password={};ip={};"
+            "last_login={};user_agent={};".format(*row)
+        )
+        logger.info(message)
+    cursor.close()
+    db.close()
+
+
 class RedactingFormatter(logging.Formatter):
     """Redacting Formatter class"""
 
@@ -68,3 +84,7 @@ class RedactingFormatter(logging.Formatter):
         return filter_datum(
             self.fields, self.REDACTION, unsafe_str, self.SEPARATOR
         )
+
+
+if __name__ == "__main__":
+    main()
