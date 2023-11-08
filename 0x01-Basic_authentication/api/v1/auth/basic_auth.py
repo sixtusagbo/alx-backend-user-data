@@ -5,7 +5,6 @@ Basic Authentication module for the API
 import base64
 from typing import TypeVar
 from api.v1.auth.auth import Auth
-import binascii
 
 from models.user import User
 
@@ -37,7 +36,7 @@ class BasicAuth(Auth):
         try:
             base64_bytes = base64.b64decode(base64_authorization_header)
             return base64_bytes.decode("utf-8")
-        except binascii.Error as e:
+        except Exception:
             return None
 
     def extract_user_credentials(
@@ -74,3 +73,24 @@ class BasicAuth(Auth):
             return user
         except Exception:
             return None
+
+    def current_user(self, request=None) -> TypeVar("User"):
+        """Return current authenticated API user"""
+        auth_header = self.authorization_header(request)
+        if not auth_header:
+            return None
+
+        encoded_base64 = self.extract_base64_authorization_header(auth_header)
+        if not encoded_base64:
+            return None
+
+        decoded_base64 = self.decode_base64_authorization_header(encoded_base64)
+        if not decoded_base64:
+            return None
+
+        creds = self.extract_user_credentials(decoded_base64)
+        if not creds:
+            return None
+
+        user = self.user_object_from_credentials(creds[0], creds[1])
+        return user
