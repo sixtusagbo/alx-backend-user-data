@@ -84,7 +84,8 @@ class BasicAuth(Auth):
         if not encoded_base64:
             return None
 
-        decoded_base64 = self.decode_base64_authorization_header(encoded_base64)
+        decoded_base64 = \
+            self.decode_base64_authorization_header(encoded_base64)
         if not decoded_base64:
             return None
 
