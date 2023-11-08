@@ -64,10 +64,13 @@ class BasicAuth(Auth):
             or not isinstance(user_pwd, str)
         ):
             return None
-        result = User.search({"email": user_email})
-        if len(result) == 0:
+        try:
+            result = User.search({"email": user_email})
+            if len(result) == 0:
+                return None
+            user: User = result[0]
+            if not user.is_valid_password(user_pwd):
+                return None
+            return user
+        except Exception:
             return None
-        user: User = result[0]
-        if not user.is_valid_password(user_pwd):
-            return None
-        return user
