@@ -1,10 +1,11 @@
+#!/usr/bin/env python3
 """Auth route module for the API
 """
 from typing import List, TypeVar
 from flask import request
 
 
-class Auth(object):
+class Auth:
     """API Auth class"""
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
