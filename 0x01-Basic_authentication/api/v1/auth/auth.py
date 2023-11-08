@@ -13,9 +13,16 @@ class Auth:
         """Check if a route path requires auth"""
         if path is None or excluded_paths is None or len(excluded_paths) == 0:
             return True
-        path = path if path[-1] == "/" else path + "/"
-        if path in excluded_paths:
-            return False
+        if excluded_paths is None or len(excluded_paths) == 0:
+            return True
+        for excluded_path in excluded_paths:
+            if path.rstrip("/") == excluded_path.rstrip("/"):
+                return False
+            if excluded_path.endswith('*'):
+                if path.startswith(excluded_path[:-1]):
+                    return False
+            elif path == excluded_path:
+                return False
         return True
 
     def authorization_header(self, request=None) -> str:
