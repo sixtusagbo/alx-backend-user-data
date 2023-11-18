@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """DB module
 """
+from typing import Any
 from sqlalchemy import create_engine
+from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+from sqlalchemy.orm.exc import NoResultFound
 
 from user import Base, User
 
@@ -39,11 +42,15 @@ class DB:
 
         return user
 
-    def find_user_by(self, **kwargs):
+    def find_user_by(self, **kwargs: Any) -> User:
         """Find user
         Takes in arbitrary keyword arguments and returns the first row found
         in the users table as filtered by the method’s input arguments.
         """
-        query = self._session.query(User).filter_by(**kwargs)
-
-        return query.one()
+        try:
+            user = self._session.query(User).filter_by(**kwargs).first()
+            if not user:
+                raise NoResultFound
+            return user
+        except InvalidRequestError as e:
+            raise e
